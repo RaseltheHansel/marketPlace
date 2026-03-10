@@ -125,7 +125,7 @@ export const deleteListing = async (req: AuthRequest, res: Response): Promise<vo
 
 // get my listing
 
-export const getMyListingss = async (req: AuthRequest, res: Response): Promise<void> => {
+export const getMyListings = async (req: AuthRequest, res: Response): Promise<void> => {
     try{
         const listings = await Listing.find({
             seller: req.userId
