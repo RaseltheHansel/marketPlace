@@ -10,5 +10,5 @@ const isAdmin = (req: AuthRequest, res: Response, next: NextFunction): void => {
     }
     next();
 };
-e
+
 export default isAdmin;
