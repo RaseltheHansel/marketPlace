@@ -5,7 +5,7 @@ import { createListingSchema } from "../schemas/listing.schema";
 import mongoose from "mongoose";
 
         
-// Get
+// post
 export const createListing = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         // zod validation  
