@@ -9,8 +9,4 @@ router.get('/', verifyToken, getByBookmarks);
 router.get('/:listingId/check', verifyToken, checkBookmarks);
 router.post('/:listingId', verifyToken, toggleBookmark);
 
-
-
-
-
 export default router;
