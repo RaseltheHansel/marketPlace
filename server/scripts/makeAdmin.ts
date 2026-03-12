@@ -7,21 +7,26 @@ dotenv.config();
 async function makeAdmin() {
   await mongoose.connect(process.env.MONGO_URI!);
 
-  // Find the user first
-  const user = await User.findOne({ email: 'your@email.com' }); // ← put your email here
+  const email = process.env.ADMIN_EMAIL;
+  const newPassword = process.env.ADMIN_PASSWORD;
 
-  if (!user) {
-    console.log('❌ User not found');
+  if (!email || !newPassword) {
+    console.log('❌ ADMIN_EMAIL or ADMIN_PASSWORD not set in .env');
     await mongoose.disconnect();
     return;
   }
 
-  // Hash the new password
-  const hashedPassword = await bcrypt.hash('password', 10); // ← put your password here
+  const user = await User.findOne({ email });
+  if (!user) {
+    console.log('❌ User not found:', email);
+    await mongoose.disconnect();
+    return;
+  }
 
-  // Update role and password
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
   const updated = await User.findOneAndUpdate(
-    { email: 'jraselthehansel@gmail.com' }, // ← same email
+    { email },
     { role: 'admin', password: hashedPassword },
     { new: true }
   );
