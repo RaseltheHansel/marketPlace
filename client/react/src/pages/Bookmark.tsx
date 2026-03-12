@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/axios';
 import type { Listing } from '../types';
+import ListingCard from '../components/ListingCard';
 
 interface BookmarkItem {
   _id:     string;
@@ -37,20 +38,7 @@ export default function Bookmarks() {
       <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
         {bookmarks?.filter(b => b.listing).map(b => (
           <div key={b._id} className='relative group'>
-            {/* listing card inline — will extract to ListingCard later */}
-            <a href={`/listings/${b.listing._id}`}
-              className='bg-white border border-gray-200 rounded-xl overflow-hidden
-                hover:shadow-lg hover:-translate-y-1 transition-all block'>
-              <img
-                src={b.listing.images[0] || 'https://placehold.co/400x300?text=No+Image'}
-                alt={b.listing.title}
-                className='w-full h-44 object-cover'
-              />
-              <div className='p-3'>
-                <p className='font-semibold text-gray-900 text-sm truncate'>{b.listing.title}</p>
-                <p className='text-blue-600 font-bold mt-1'>₱{b.listing.price.toLocaleString()}</p>
-              </div>
-            </a>
+            <ListingCard listing={b.listing} />
             <button
               onClick={() => removeMutation.mutate(b.listing._id)}
               className='absolute top-2 right-2 bg-white rounded-full w-7 h-7
