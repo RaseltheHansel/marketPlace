@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import type { ListingResponse } from '../types';
-
-const CATEGORIES = ['Electronics','Clothing','Furniture','Books','Vehicles','Sports','Toys','Food','Other'];
-const CONDITIONS  = ['new','like-new','good','fair','poor'];
+import ListingCard from '../components/ListingCard';
+import SearchBar   from '../components/SearchBar';
 
 export default function Home() {
   const [search,    setSearch]    = useState('');
@@ -26,7 +24,9 @@ export default function Home() {
     },
   });
 
-  const inp = 'border border-gray-300 p-2 rounded-lg text-sm outline-none focus:border-blue-500 bg-white';
+  const handleClear = () => {
+    setSearch(''); setCategory(''); setCondition(''); setPage(1);
+  };
 
   return (
     <div className='max-w-6xl mx-auto px-4 py-8'>
@@ -35,26 +35,14 @@ export default function Home() {
         <p className='text-gray-500 text-sm'>Find great deals near you</p>
       </div>
 
-      {/* Search and Filters */}
-      <div className='flex gap-3 mb-6 flex-wrap'>
-        <input type='text' placeholder='Search items...' value={search}
-          onChange={e => { setSearch(e.target.value); setPage(1); }}
-          className={inp + ' flex-1 min-w-48'} />
-        <select value={category} onChange={e => { setCategory(e.target.value); setPage(1); }} className={inp}>
-          <option value=''>All Categories</option>
-          {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
-        <select value={condition} onChange={e => { setCondition(e.target.value); setPage(1); }} className={inp}>
-          <option value=''>Any Condition</option>
-          {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
-        <button onClick={() => { setSearch(''); setCategory(''); setCondition(''); setPage(1); }}
-          className='text-sm text-blue-600 hover:text-blue-800 font-medium px-3'>
-          Clear
-        </button>
-      </div>
+      <SearchBar
+        search={search} category={category} condition={condition}
+        onSearch={(v) => { setSearch(v); setPage(1); }}
+        onCategory={(v) => { setCategory(v); setPage(1); }}
+        onCondition={(v) => { setCondition(v); setPage(1); }}
+        onClear={handleClear}
+      />
 
-      {/* Loading skeleton */}
       {isLoading && (
         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
           {Array.from({ length: 8 }).map((_, i) => (
@@ -76,31 +64,11 @@ export default function Home() {
           ) : (
             <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
               {data.listings.map(listing => (
-                <Link key={listing._id} to={`/listings/${listing._id}`}
-                  className='bg-white border border-gray-200 rounded-xl overflow-hidden
-                    hover:shadow-lg hover:-translate-y-1 transition-all block'>
-                  <img
-                    src={listing.images[0] || 'https://placehold.co/400x300?text=No+Image'}
-                    alt={listing.title}
-                    className='w-full h-44 object-cover'
-                  />
-                  <div className='p-3'>
-                    <p className='font-semibold text-gray-900 text-sm truncate'>{listing.title}</p>
-                    <p className='text-blue-600 font-bold mt-1'>₱{listing.price.toLocaleString()}</p>
-                    <div className='flex items-center justify-between mt-2'>
-                      <span className='text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full'>
-                        {listing.condition}
-                      </span>
-                      <span className='text-xs text-gray-400 truncate ml-2'>{listing.location}</span>
-                    </div>
-                    <p className='text-xs text-gray-400 mt-1 truncate'>{listing.seller?.name}</p>
-                  </div>
-                </Link>
+                <ListingCard key={listing._id} listing={listing} />
               ))}
             </div>
           )}
 
-          {/* Pagination */}
           {data.pages > 1 && (
             <div className='flex justify-center gap-2 mt-8'>
               {Array.from({ length: data.pages }, (_, i) => i + 1).map(p => (
