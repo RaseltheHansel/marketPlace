@@ -7,7 +7,7 @@ const listingSchema = new Schema<IListing>(
     title: {type: String, required: true },
     description: {type: String, required: true},
     price: {type: Number, required: true, min: 0},
-    category: {type: String, enum: ['Electronics', 'Clothing', 'Furniture', 'Books', 'Vehicles', 'Sports', 'Toys', 'Food', 'Others'], required: true},
+    category: {type: String, enum: ['Electronics', 'Clothing', 'Furniture', 'Books', 'Vehicles', 'Sports', 'Toys', 'Food', 'Other'], required: true},
     condition: {type: String, enum: ['new', 'like-new', 'good', 'fair', 'poor'], required: true},
     images: [{type: String}],
     location: {type: String, required: true},
