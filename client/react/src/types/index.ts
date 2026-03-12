@@ -15,7 +15,7 @@ export interface Listing {
     seller: User;
     title: string;
     description: string;
-    price: number;
+    price: number;  
     category: Category;
     condition: ListingCondition;
     images: string[];
