@@ -185,3 +185,34 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
         }
     }
 };
+
+// reset password
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const {email, token, newPassword} = req.body as {email: string; token: string; newPassword: string; };
+
+        const user = await User.findOne({email});
+        if(!user || user.resetToken !== token) {
+            res.status(400).json({message: 'Invalid or expired reset link.'});
+            return;
+        }
+        if(user.resetTokenExpires && user.resetTokenExpires < new Date()) {
+            res.status(400).json({message: 'Reset link has expired'});
+            return;
+        }
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        user.resetToken = undefined;
+        user.resetTokenExpires = undefined;
+        await user.save();
+
+     res.json({ message: 'Password reset successful! You can now login.' });
+
+
+
+    }catch(error: unknown) {
+        if(error instanceof Error) {
+            res.status(500).json({message: error.message});
+        }
+    }
+};
