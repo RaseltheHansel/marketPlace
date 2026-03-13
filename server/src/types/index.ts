@@ -20,7 +20,7 @@ export interface IUser extends Document {
 
     // email verification
     isVerified: boolean;
-    verifiedCode?: string;
+    verificationCode?: string;
     verificationExpires?: Date;
 
     // password reset

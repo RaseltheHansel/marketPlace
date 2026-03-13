@@ -12,9 +12,9 @@ const userSchema = new Schema<IUser>(
 
 
         // email verification 
-        isVerified?: {type: Boolean, default: false},
+        isVerified: {type: Boolean, default: false},
         verificationCode: {type: String},
-        verificationExpores: {type: Date},
+        verificationExpires: {type: Date},
 
         // password reset
         resetToken: { type: String},
