@@ -45,4 +45,7 @@ export interface Message {
 export interface AuthResponse {
     token: string;
     user: User;
+    email?: string;
+    message?: string;
+    needsVerification?: boolean;
 }
