@@ -18,7 +18,7 @@ export const getPendingListings = async (req: AuthRequest, res: Response): Promi
 
 export const updateListingStatus = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-        const {status, reason } = req.body as {status: 'Approved' | 'rejected'; reason?: string};
+        const {status, reason } = req.body as {status: 'approved' | 'rejected'; reason?: string};
         const listing = await Listing.findByIdAndUpdate(
             req.params.id, {status}, {new: true}
         ).populate('seller', 'name email');
@@ -30,7 +30,7 @@ export const updateListingStatus = async (req: AuthRequest, res: Response): Prom
 
         const seller = listing.seller as unknown as {name: string; email: string};
 
-        if(status === 'Approved') {
+        if(status === 'approved') {
             await sendEmail(
                 seller.email,
                 'Your Listing has been Approved!',
@@ -75,4 +75,18 @@ export const getAllUsers = async (req: AuthRequest, res: Response): Promise<void
             res.status(500).json({message: error.message});
         }
     }
-}
+};
+
+export const deleteListing = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const listing = await Listing.findByIdAndDelete(req.params.id);
+    if (!listing) {
+      res.status(404).json({ message: 'Listing not found.' });
+      return;
+    }
+    res.json({ message: 'Listing deleted by admin.' });
+  } catch (error: unknown) {
+    if (error instanceof Error)
+      res.status(500).json({ message: error.message });
+  }
+};

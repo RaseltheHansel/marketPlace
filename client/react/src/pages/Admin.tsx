@@ -1,4 +1,4 @@
-    import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import api from '../api/axios';
 import type { Listing, User } from '../types';
@@ -29,6 +29,11 @@ export default function Admin() {
   const statusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) =>
       api.patch(`/admin/listings/${id}/status`, { status }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-pending'] }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => api.delete(`/admin/listings/${id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-pending'] }),
   });
 
@@ -85,6 +90,16 @@ export default function Admin() {
                   className='bg-red-500 hover:bg-red-600 disabled:opacity-50
                     text-white px-4 py-2 rounded-lg text-sm font-medium'>
                   ✗ Reject
+                </button>
+                <button
+                  onClick={() => {
+                    if (confirm('Delete this listing?'))
+                      deleteMutation.mutate(listing._id);
+                  }}
+                  disabled={deleteMutation.isPending}
+                  className='bg-gray-500 hover:bg-gray-600 disabled:opacity-50
+                    text-white px-4 py-2 rounded-lg text-sm font-medium'>
+                  🗑 Delete
                 </button>
               </div>
             </div>
