@@ -65,6 +65,52 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+export const verifyEmail = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const {email, code } = req.body as { email: string; code: string};
+
+        const user = await User.findOne({email});
+        if(!user) {
+            res.status(404).json({message: 'User is not found'});
+            return;
+        }
+        if(user.isVerified) {
+            res.status(400).json({message: 'Email is already verified.'});
+            return;
+        }
+        if(user.verificationCode !== code) {
+            res.status(400).json({message: 'Invalid verification code.'});
+            return;
+        }
+        if(user.verificationExpires && user.verificationExpires < new Date()) {
+            res.status(400).json({message: 'Verification code expired.'});
+            return;
+        }
+
+        user.isVerified = true;
+        user.verificationCode = undefined;
+        user.verificationExpires = undefined;
+        await user.save();
+
+        const secret = process.env.JWT_SECRET!;
+        const token  = jwt.sign({ id: user._id, role: user.role }, secret, { expiresIn: '7d' });
+
+        res.json({
+            token,
+            user: { _id: user._id, name: user.name, email: user.email, role: user.role },
+        });
+    } catch(error: unknown){
+        if(error instanceof Error) {
+            res.status(500).json({message: error.message});
+        }
+
+    } 
+};
+
+
+
+
+
 export const login = async (req: Request, res: Response): Promise<void> => {
     try {
         const {email, password} = req.body as {
