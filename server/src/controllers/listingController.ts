@@ -121,7 +121,7 @@ export const getListingById = async (req: AuthRequest, res: Response): Promise<v
       viewedSessions.add(sessionKey);
       await Listing.findByIdAndUpdate(req.params.id, {$inc: {views: 1} });
     }
-    res.json(listing);
+    res.json(listing);  
 
   } catch (error: unknown) {
     if (error instanceof Error)

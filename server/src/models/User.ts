@@ -9,6 +9,16 @@ const userSchema = new Schema<IUser>(
         password: {type: String, required: true},
         role: {type: String, enum: ['user', 'admin'], default: 'user'},
         avatar: {type: String, default: ''},
+
+
+        // email verification 
+        isVerified?: {type: Boolean, default: false},
+        verificationCode: {type: String},
+        verificationExpores: {type: Date},
+
+        // password reset
+        resetToken: { type: String},
+        resetTokenExpires: {type: Date},
     },
     {timestamps: true}
 );
