@@ -2,6 +2,9 @@ import type { Request, Response} from 'express';
 import bcrypt from 'bcryptjs';
 import jwt  from 'jsonwebtoken';
 import User from '../models/User';
+import { sendEmail } from '../config/nodemailer';
+
+// Register
 
 export const register = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -18,14 +21,42 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({name, email, password: hashedPassword});
+
+        // Generate 6-digit verification code 
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+
+        const user = new User({
+            name, email,
+            password: hashedPassword,
+            verificationCode,
+            verificationExpires,
+            isVerified: false,
+        });
+
         await user.save();
 
-        const secret = process.env.JWT_SECRET;
-        if(!secret) throw new Error('JWT_SECRET not defined!');
+        // send verification email
+        await sendEmail(
+          email,
+            'Verify your Marketplace account',
+            `<div style='font-family: sans-serif; max-width: 600px; margin: auto;'>
+          <h2 style='color: #2e86c1;'>Welcome to Marketplace, ${name}!</h2>
+          <p>Your verification code is:</p>
+          <div style='font-size: 40px; font-weight: bold; letter-spacing: 8px;
+          color: #2e86c1; text-align: center; padding: 20px;
+          background: #eaf4fb; border-radius: 12px; margin: 20px 0;'>
+          ${verificationCode}
+        </div>
+        <p style='color: #888;'>This code expires in 24 hours.</p>
+      </div>`
+    );
 
-        const token = jwt.sign({ id: user._id, role: user.role }, secret, { expiresIn: '7d' });
-        res.status(201).json({ token, user: { _id: user._id, name, email, role: user.role } });
+    res.status(201).json({
+        message: 'Registration successful! Check your email for the verification code.',
+        email,
+    });
+
 
     } catch(error: unknown) {
         if(error instanceof Error) {
@@ -75,3 +106,5 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         }
     }
 };
+
+// 
