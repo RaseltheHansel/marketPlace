@@ -12,7 +12,7 @@ export const toggleBookmark = async (req: AuthRequest, res: Response): Promise<v
 
         if(existing) {
             await Bookmark.deleteOne({
-                id: existing._id
+                _id: existing._id
             });
             res.json({bookmarked: false, message: 'Removed from Bookmarks.'});
         }else {
@@ -49,7 +49,7 @@ export const checkBookmarks = async (req: AuthRequest, res: Response): Promise<v
         
     }catch(error: unknown){
         if(error instanceof Error){
-            res.status(500).json({message: error.message});
+            res.status(500) .json({message: error.message});
         }
     }
 };

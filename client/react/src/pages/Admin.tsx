@@ -12,7 +12,7 @@ export default function Admin() {
   const { data: pending } = useQuery({
     queryKey: ['admin-pending'],
     queryFn:  async () => {
-      const r = await api.get<Listing[]>('/admin/listings/pending');
+      const r = await api.get<Listing[]>('/admin/listings/pendi ng');
       return r.data;
     },
   });

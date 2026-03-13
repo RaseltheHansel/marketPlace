@@ -105,6 +105,9 @@ export const getListings = async (req: AuthRequest, res: Response): Promise<void
 };
 
 // get listing by id
+
+const viewedSessions = new Set<string>();
+
 export const getListingById = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const listing = await Listing.findById(req.params.id).populate('seller', 'name email avatar');
@@ -112,7 +115,12 @@ export const getListingById = async (req: AuthRequest, res: Response): Promise<v
       res.status(404).json({ message: 'Listing not found.' });
       return;
     }
-    await Listing.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
+    // only counts view once per user/IP per listing
+    const sessionKey = `${req.ip}-${req.params.id}`;
+    if(!viewedSessions.has(sessionKey)) {
+      viewedSessions.add(sessionKey);
+      await Listing.findByIdAndUpdate(req.params.id, {$inc: {views: 1} });
+    }
     res.json(listing);
 
   } catch (error: unknown) {
