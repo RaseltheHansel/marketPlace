@@ -3,9 +3,9 @@ import bcrypt from 'bcryptjs';
 import jwt  from 'jsonwebtoken';
 import User from '../models/User';
 import { sendEmail } from '../config/nodemailer';
+import crypto from 'crypto'
 
 // Register
-
 export const register = async (req: Request, res: Response): Promise<void> => {
     try {
         const {name, email, password} = req.body as {
@@ -39,17 +39,17 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         // send verification email
         await sendEmail(
           email,
-            'Verify your Marketplace account',
-            `<div style='font-family: sans-serif; max-width: 600px; margin: auto;'>
-          <h2 style='color: #2e86c1;'>Welcome to Marketplace, ${name}!</h2>
-          <p>Your verification code is:</p>
-          <div style='font-size: 40px; font-weight: bold; letter-spacing: 8px;
-          color: #2e86c1; text-align: center; padding: 20px;
-          background: #eaf4fb; border-radius: 12px; margin: 20px 0;'>
-          ${verificationCode}
-        </div>
-        <p style='color: #888;'>This code expires in 24 hours.</p>
-      </div>`
+          'Verify your Marketplace account',
+        `<div style='font-family: sans-serif; max-width: 600px; margin: auto;'>
+            <h2 style='color: #2e86c1;'>Welcome to Marketplace, ${name}!</h2>
+            <p>Your verification code is:</p>
+            <div style='font-size: 40px; font-weight: bold; letter-spacing: 8px;
+            color: #2e86c1; text-align: center; padding: 20px;
+            background: #eaf4fb; border-radius: 12px; margin: 20px 0;'>
+            ${verificationCode}
+            </div>
+            <p style='color: #888;'>This code expires in 24 hours.</p>
+        </div>`
     );
 
     res.status(201).json({
@@ -65,6 +65,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+// verifyEmail
 export const verifyEmail = async (req: Request, res: Response): Promise<void> => {
     try {
         const {email, code } = req.body as { email: string; code: string};
@@ -108,49 +109,79 @@ export const verifyEmail = async (req: Request, res: Response): Promise<void> =>
 };
 
 
-
-
-
+// login
 export const login = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const {email, password} = req.body as {
-            email: string;
-            password: string;
-        };
+  try {
+    const { email, password } = req.body as { email: string; password: string };
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(400).json({ message: 'No account with this email.' });
+      return;
+    }
+    if (!user.isVerified) {
+      res.status(400).json({ message: 'Please verify your email first.', needsVerification: true, email });
+      return;
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      res.status(400).json({ message: 'Wrong password.' });
+      return;
+    }
+
+    const secret = process.env.JWT_SECRET!;
+    const token  = jwt.sign({ id: user._id, role: user.role }, secret, { expiresIn: '7d' });
+
+    res.json({
+      token,
+      user: { _id: user._id, name: user.name, email: user.email, role: user.role },
+    });
+
+  } catch (error: unknown) {
+    if (error instanceof Error)
+      res.status(500).json({ message: error.message });
+  }
+};
+
+// forgot password
+export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const {email} = req.body as {email: string};
 
         const user = await User.findOne({email});
-        
-        // 🔍 Debug logs
-        console.log('👤 User found:', user?.email);
-        console.log('👑 Role:', user?.role);
-        console.log('🔒 Password in DB:', user?.password);
-
-        if(!user) {
-            res.status(400).json({message: 'No account with this email'});
+        if(!user){
+            res.json({message: 'If this Email exists, a reset link has been sent'});
             return;
         }
-
-        const isMatch = await bcrypt.compare(password, user.password);
         
-        // 🔍 Debug log
-        console.log('🔑 Password match:', isMatch);
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); //1hour
 
-        if(!isMatch) {
-            res.status(400).json({message: 'Wrong password'});
-            return;
-        }
+        user.resetToken = resetToken;
+        user.resetTokenExpires = resetTokenExpires;
+        await user.save();
 
-        const secret = process.env.JWT_SECRET;
-        if(!secret) throw new Error('JWT_SECRET not defined');
+        const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}&email=${email}`;
 
-        const token = jwt.sign({ id: user._id, role: user.role }, secret, { expiresIn: '7d' });
-        res.json({ token, user: { _id: user._id, name: user.name, email: user.email, role: user.role } });
+         await sendEmail(
+         email,
+        'Reset your Marketplace password',
+        `<div style='font-family: sans-serif; max-width: 600px; margin: auto;'>
+           <h2 style='color: #e74c3c;'>Password Reset Request</h2>
+           <p>Hi ${user.name}, click the button below to reset your password.</p>
+           <a href='${resetUrl}' style='display: inline-block; background: #e74c3c; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;font-weight: bold; margin: 20px 0;'>
+            Reset Password
+           </a>
+           <p style='color: #888;'>This link expires in 1 hour. If you didn't request this, ignore this email.</p>
+        </div>`
+        
+    );
+    res.json({message: 'If this email exists, reset link has been sent.'});
 
-    } catch(error: unknown) {
+    }catch(error: unknown) {
         if(error instanceof Error) {
-             res.status(500).json({message: error.message});
+            res.status(500).json({message: error.message});
         }
     }
 };
-
-// 
