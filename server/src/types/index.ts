@@ -17,6 +17,15 @@ export interface IUser extends Document {
     password: string;
     role: 'user' | 'admin';
     avatar?: string;
+
+    // email verification
+    isVerified: boolean;
+    verifiedCode?: string;
+    verificationExpires?: Date;
+
+    // password reset
+    resetToken?: string;
+    resetTokenExpires?: Date;
 }
 
 export interface IListing extends Document {
