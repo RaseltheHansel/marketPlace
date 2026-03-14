@@ -9,6 +9,10 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ListingDetail from "./pages/ListingDetail";
 import Bookmarks from "./pages/Bookmark";
+import VerifyEmail    from './pages/VerifyEmail';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword  from './pages/ResetPassword';
+
 
 const Protected = ({children}: {children: ReactNode}) => {
   const token = localStorage.getItem('token');
@@ -30,6 +34,9 @@ export default function App() {
       <Route path ='/login' element={<Login />}/>
       <Route path ='/register' element={<Register />}/>
       <Route path ='/listings/:id' element={<ListingDetail />}/>
+      <Route path='/verify-email'    element={<VerifyEmail />} />
+      <Route path='/forgot-password' element={<ForgotPassword />} />
+      <Route path='/reset-password'  element={<ResetPassword />} />
       <Route path ='/create' element={<Protected><CreateListing /></Protected> } />
       <Route path ='/my-listings' element={<Protected><MyListings /></Protected> } />
       <Route path ='/bookmarks' element={<Protected><Bookmarks /></Protected> } />

@@ -17,10 +17,9 @@ export default function Register() {
       return r.data;
     },
     onSuccess: (data) => {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      navigate('/');
-    },
+    // ← Don't save token yet, redirect to verify page
+    navigate('/verify-email', { state: { email: data.email } });
+},
     onError: () => alert('Registration failed. Email may already be used.'),
   });
 
