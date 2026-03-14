@@ -41,6 +41,12 @@ export default function Login() {
               text-white py-3 rounded-lg font-bold text-sm'>
             {mutation.isPending ? 'Logging in...' : 'Login'}
           </button>
+          <div className='text-right'>
+           <Link to='/forgot-password'
+            className='text-sm text-blue-600 hover:underline'>
+            Forgot password?
+          </Link>
+        </div>
         </form>
         <p className='text-sm text-center text-gray-500 mt-4'>
           No account yet?{' '}
