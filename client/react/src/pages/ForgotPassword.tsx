@@ -5,8 +5,8 @@ import { useMutation } from '@tanstack/react-query';
 import api from '../api/axios';
 
 export default function ForgotPassword() {
-  const [email,   setEmail]   = useState('');
-  const [sent,    setSent]    = useState(false);
+  const [email, setEmail] = useState('');
+  const [sent,  setSent]  = useState(false);
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -16,42 +16,71 @@ export default function ForgotPassword() {
     onError:   () => alert('Something went wrong. Try again.'),
   });
 
-  const inp = 'w-full border border-gray-300 p-3 rounded-lg outline-none focus:border-blue-500 text-sm';
-
   if (sent) return (
-    <div className='min-h-screen bg-gray-50 flex items-center justify-center px-4'>
-      <div className='bg-white rounded-2xl border border-gray-200 p-8 w-full max-w-md text-center'>
-        <div className='text-5xl mb-4'>📬</div>
-        <h1 className='text-2xl font-bold text-gray-900 mb-2'>Check your email</h1>
-        <p className='text-sm text-gray-500 mb-6'>
-          If <strong>{email}</strong> has an account, a reset link has been sent.
+    <div style={{ background: '#1c1209', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+      <div style={{ background: '#2e2010', border: '1px solid #3d2d18', borderRadius: '22px', padding: '40px', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+        <div style={{ width: '72px', height: '72px', background: '#251a0e', border: '1px solid #4caf50', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', margin: '0 auto 20px' }}>
+          📬
+        </div>
+        <h1 style={{ fontFamily: 'Fraunces, serif', fontSize: '26px', color: '#f5ede0', marginBottom: '10px' }}>
+          Email sent!
+        </h1>
+        <p style={{ fontSize: '13px', color: '#8c7055', lineHeight: 1.7, marginBottom: '28px' }}>
+          If <span style={{ color: '#f0832f' }}>{email}</span> has an account,
+          a reset link has been sent. Check your inbox and spam folder.
         </p>
-        <Link to='/login' className='text-blue-600 hover:underline text-sm font-medium'>
-          Back to Login
+        <div style={{ height: '1px', background: '#3d2d18', marginBottom: '24px' }} />
+        <Link to='/login'
+          style={{ color: '#f0832f', fontSize: '14px', fontWeight: 500, textDecoration: 'none' }}>
+          ← Back to Login
         </Link>
       </div>
     </div>
   );
 
   return (
-    <div className='min-h-screen bg-gray-50 flex items-center justify-center px-4'>
-      <div className='bg-white rounded-2xl border border-gray-200 p-8 w-full max-w-md'>
-        <h1 className='text-2xl font-bold text-gray-900 mb-2'>Forgot Password</h1>
-        <p className='text-sm text-gray-500 mb-6'>
-          Enter your email and we'll send you a reset link.
-        </p>
+    <div style={{ background: '#1c1209', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+      <div style={{ background: '#2e2010', border: '1px solid #3d2d18', borderRadius: '22px', padding: '40px', width: '100%', maxWidth: '400px' }}>
+
+        {/* Icon + Title */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '28px' }}>
+          <div style={{ width: '52px', height: '52px', background: '#251a0e', border: '1px solid #e85d26', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px' }}>
+            🔑
+          </div>
+          <div>
+            <h1 style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', color: '#f5ede0', lineHeight: 1.1 }}>
+              Forgot password?
+            </h1>
+            <p style={{ fontSize: '13px', color: '#8c7055', marginTop: '2px' }}>
+              We'll send you a reset link
+            </p>
+          </div>
+        </div>
+
         <form onSubmit={(e: FormEvent) => { e.preventDefault(); mutation.mutate(); }}
-          className='space-y-4'>
-          <input type='email' placeholder='Your email' value={email}
-            onChange={e => setEmail(e.target.value)} required className={inp} />
+          style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={{ fontSize: '11px', color: '#c9a87a', display: 'block', marginBottom: '7px', letterSpacing: '1px', textTransform: 'uppercase' as const }}>
+              Email address
+            </label>
+            <input type='email' placeholder='you@email.com' value={email}
+              onChange={e => setEmail(e.target.value)} required
+              style={{ width: '100%', background: '#251a0e', border: '1px solid #3d2d18', color: '#f5ede0', padding: '12px 14px', borderRadius: '10px', fontSize: '14px', fontFamily: 'Outfit, sans-serif', outline: 'none' }}
+              onFocus={e => (e.target as HTMLInputElement).style.borderColor = '#e85d26'}
+              onBlur={e => (e.target as HTMLInputElement).style.borderColor = '#3d2d18'} />
+          </div>
+
           <button type='submit' disabled={mutation.isPending}
-            className='w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50
-              text-white py-3 rounded-lg font-bold text-sm'>
+            style={{ background: mutation.isPending ? '#7a3010' : '#e85d26', color: '#fff', border: 'none', padding: '13px', borderRadius: '10px', fontSize: '14px', fontWeight: 600, cursor: mutation.isPending ? 'not-allowed' : 'pointer', fontFamily: 'Outfit, sans-serif', transition: 'background 0.2s' }}>
             {mutation.isPending ? 'Sending...' : 'Send Reset Link'}
           </button>
         </form>
-        <p className='text-sm text-center text-gray-500 mt-4'>
-          <Link to='/login' className='text-blue-600 hover:underline font-medium'>
+
+        <div style={{ height: '1px', background: '#3d2d18', margin: '24px 0' }} />
+
+        <p style={{ textAlign: 'center', fontSize: '13px', color: '#8c7055' }}>
+          Remember your password?{' '}
+          <Link to='/login' style={{ color: '#f0832f', fontWeight: 500, textDecoration: 'none' }}>
             Back to Login
           </Link>
         </p>
