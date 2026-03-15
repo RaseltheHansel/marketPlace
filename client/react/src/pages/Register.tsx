@@ -17,36 +17,144 @@ export default function Register() {
       return r.data;
     },
     onSuccess: (data) => {
-    // ← Don't save token yet, redirect to verify page
-    navigate('/verify-email', { state: { email: data.email } });
-},
+      navigate('/verify-email', { state: { email: data.email } });
+    },
     onError: () => alert('Registration failed. Email may already be used.'),
   });
 
-  const inp = 'w-full border border-gray-300 p-3 rounded-lg outline-none focus:border-blue-500 text-sm';
+  const inputStyle = {
+    width: '100%',
+    background: '#251a0e',
+    border: '1px solid #3d2d18',
+    color: '#f5ede0',
+    padding: '12px 14px',
+    borderRadius: '10px',
+    fontSize: '14px',
+    fontFamily: 'Outfit, sans-serif',
+    outline: 'none',
+  };
+
+  const labelStyle = {
+    fontSize: '11px',
+    color: '#c9a87a',
+    display: 'block',
+    marginBottom: '7px',
+    letterSpacing: '1px',
+    textTransform: 'uppercase' as const,
+  };
 
   return (
-    <div className='min-h-screen bg-gray-50 flex items-center justify-center px-4'>
-      <div className='bg-white rounded-2xl border border-gray-200 p-8 w-full max-w-md'>
-        <h1 className='text-2xl font-bold text-gray-900 mb-2'>Create Account</h1>
-        <p className='text-sm text-gray-500 mb-6'>Join the marketplace today</p>
+    <div style={{ background: '#1c1209', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+      <div style={{ background: '#2e2010', border: '1px solid #3d2d18', borderRadius: '22px', padding: '40px', width: '100%', maxWidth: '400px' }}>
+
+        {/* Top */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '28px' }}>
+          <div style={{ width: '52px', height: '52px', background: '#251a0e', border: '1px solid #e85d26', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px' }}>
+            🛍️
+          </div>
+          <div>
+            <h1 style={{ fontFamily: 'Fraunces, serif', fontSize: '26px', color: '#f5ede0', lineHeight: 1.1 }}>
+              Create account
+            </h1>
+            <p style={{ fontSize: '13px', color: '#8c7055', marginTop: '2px' }}>
+              Join the marketplace today
+            </p>
+          </div>
+        </div>
+
+        {/* Steps indicator */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '28px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#e85d26', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', color: '#fff', fontWeight: 600 }}>1</div>
+            <span style={{ fontSize: '12px', color: '#f0832f', fontWeight: 500 }}>Details</span>
+          </div>
+          <div style={{ flex: 1, height: '1px', background: '#3d2d18' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#3d2d18', border: '1px solid #3d2d18', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', color: '#8c7055', fontWeight: 600 }}>2</div>
+            <span style={{ fontSize: '12px', color: '#8c7055' }}>Verify email</span>
+          </div>
+        </div>
+
+        {/* Form */}
         <form onSubmit={(e: FormEvent) => { e.preventDefault(); mutation.mutate(); }}
-          className='space-y-4'>
-          <input type='text' placeholder='Full Name' value={name}
-            onChange={e => setName(e.target.value)} required className={inp} />
-          <input type='email' placeholder='Email' value={email}
-            onChange={e => setEmail(e.target.value)} required className={inp} />
-          <input type='password' placeholder='Password' value={password}
-            onChange={e => setPassword(e.target.value)} required className={inp} />
+          style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+          <div>
+            <label style={labelStyle}>Full Name</label>
+            <input type='text' placeholder='Russelle Amorsolo' value={name}
+              onChange={e => setName(e.target.value)} required style={inputStyle}
+              onFocus={e => (e.target as HTMLInputElement).style.borderColor = '#e85d26'}
+              onBlur={e => (e.target as HTMLInputElement).style.borderColor = '#3d2d18'} />
+          </div>
+
+          <div>
+            <label style={labelStyle}>Email</label>
+            <input type='email' placeholder='you@email.com' value={email}
+              onChange={e => setEmail(e.target.value)} required style={inputStyle}
+              onFocus={e => (e.target as HTMLInputElement).style.borderColor = '#e85d26'}
+              onBlur={e => (e.target as HTMLInputElement).style.borderColor = '#3d2d18'} />
+          </div>
+
+          <div>
+            <label style={labelStyle}>Password</label>
+            <input type='password' placeholder='Min. 6 characters' value={password}
+              onChange={e => setPassword(e.target.value)} required minLength={6} style={inputStyle}
+              onFocus={e => (e.target as HTMLInputElement).style.borderColor = '#e85d26'}
+              onBlur={e => (e.target as HTMLInputElement).style.borderColor = '#3d2d18'} />
+          </div>
+
+          {/* Password strength */}
+          {password.length > 0 && (
+            <div style={{ marginTop: '-8px' }}>
+              <div style={{ display: 'flex', gap: '4px', marginBottom: '4px' }}>
+                {[1,2,3,4].map(i => (
+                  <div key={i} style={{
+                    flex: 1, height: '3px', borderRadius: '2px',
+                    background: password.length >= i * 3
+                      ? i <= 1 ? '#e85d26' : i <= 2 ? '#f0832f' : i <= 3 ? '#d4a843' : '#4caf50'
+                      : '#3d2d18',
+                    transition: 'background 0.3s',
+                  }} />
+                ))}
+              </div>
+              <p style={{ fontSize: '11px', color: '#8c7055' }}>
+                {password.length < 4 ? 'Weak' : password.length < 7 ? 'Fair' : password.length < 10 ? 'Good' : 'Strong'}
+              </p>
+            </div>
+          )}
+
           <button type='submit' disabled={mutation.isPending}
-            className='w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50
-              text-white py-3 rounded-lg font-bold text-sm'>
-            {mutation.isPending ? 'Creating account...' : 'Register'}
+            style={{
+              background: mutation.isPending ? '#7a3010' : '#e85d26',
+              color: '#fff', border: 'none', padding: '13px',
+              borderRadius: '10px', fontSize: '14px', fontWeight: 600,
+              cursor: mutation.isPending ? 'not-allowed' : 'pointer',
+              fontFamily: 'Outfit, sans-serif', marginTop: '4px',
+              letterSpacing: '0.3px', transition: 'background 0.2s',
+            }}>
+            {mutation.isPending ? 'Creating account...' : 'Create Account →'}
           </button>
         </form>
-        <p className='text-sm text-center text-gray-500 mt-4'>
+
+        {/* Terms */}
+        <p style={{ fontSize: '11px', color: '#8c7055', textAlign: 'center', marginTop: '16px', lineHeight: 1.6 }}>
+          By registering you agree to our{' '}
+          <span style={{ color: '#f0832f', cursor: 'pointer' }}>Terms of Service</span>
+          {' '}and{' '}
+          <span style={{ color: '#f0832f', cursor: 'pointer' }}>Privacy Policy</span>
+        </p>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0' }}>
+          <div style={{ flex: 1, height: '1px', background: '#3d2d18' }} />
+          <span style={{ fontSize: '12px', color: '#8c7055' }}>or</span>
+          <div style={{ flex: 1, height: '1px', background: '#3d2d18' }} />
+        </div>
+
+        <p style={{ textAlign: 'center', fontSize: '13px', color: '#8c7055' }}>
           Already have an account?{' '}
-          <Link to='/login' className='text-blue-600 hover:underline font-medium'>Login</Link>
+          <Link to='/login' style={{ color: '#f0832f', fontWeight: 500, textDecoration: 'none' }}>
+            Login
+          </Link>
         </p>
       </div>
     </div>
