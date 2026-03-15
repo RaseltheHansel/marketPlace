@@ -12,38 +12,58 @@ export default function Navbar() {
   };
 
   return (
-    <nav className='bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-50'>
+    <nav style={{ background: '#251a0e', borderBottom: '1px solid #3d2d18' }}
+      className='px-6 py-3 sticky top-0 z-50'>
       <div className='max-w-6xl mx-auto flex items-center justify-between'>
-        <Link to='/' className='font-bold text-xl text-blue-600'>
-          🛍️ Marketplace
+
+        {/* Logo */}
+        <Link to='/' className='text-xl' style={{ fontFamily: 'Fraunces, serif' }}>
+          <span style={{ color: '#f5ede0' }}>Market</span>
+          <em style={{ color: '#e85d26', fontStyle: 'italic' }}>Place</em>
         </Link>
-        <div className='flex items-center gap-3'>
+
+        {/* Links */}
+        <div className='flex items-center gap-5'>
           {token ? (
             <>
               <Link to='/create'
-                className='bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700'>
+                style={{ background: '#e85d26', color: '#fff', fontFamily: 'Outfit, sans-serif' }}
+                className='px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity'>
                 + Post Item
               </Link>
-              <Link to='/bookmarks' className='text-sm text-gray-600 hover:text-gray-900'>
+              <Link to='/bookmarks'
+                style={{ color: '#8c7055' }}
+                className='text-sm hover:text-[#f5ede0] transition-colors'>
                 ★ Saved
               </Link>
-              <Link to='/my-listings' className='text-sm text-gray-600 hover:text-gray-900'>
+              <Link to='/my-listings'
+                style={{ color: '#8c7055' }}
+                className='text-sm hover:text-[#f5ede0] transition-colors'>
                 My Listings
               </Link>
               {user.role === 'admin' && (
-                <Link to='/admin' className='text-sm text-red-600 hover:text-red-800 font-medium'>
+                <Link to='/admin'
+                  style={{ color: '#d4a843' }}
+                  className='text-sm font-medium hover:opacity-80 transition-opacity'>
                   Admin
                 </Link>
               )}
-              <button onClick={logout} className='text-sm text-gray-500 hover:text-gray-700'>
+              <button onClick={logout}
+                style={{ color: '#8c7055' }}
+                className='text-sm hover:text-[#f5ede0] transition-colors'>
                 Logout
               </button>
             </>
           ) : (
             <>
-              <Link to='/login' className='text-sm text-gray-600 hover:text-gray-900'>Login</Link>
+              <Link to='/login'
+                style={{ color: '#8c7055' }}
+                className='text-sm hover:text-[#f5ede0] transition-colors'>
+                Login
+              </Link>
               <Link to='/register'
-                className='bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700'>
+                style={{ background: '#e85d26', color: '#fff' }}
+                className='px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity'>
                 Register
               </Link>
             </>
