@@ -24,10 +24,18 @@ export default function BookmarkButton({ listingId }: { listingId: string }) {
     <button
       onClick={() => mutation.mutate()}
       disabled={mutation.isPending}
-      className={`text-3xl transition-all hover:scale-110 active:scale-95
-        ${bookmarked ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-300'}`}
       title={bookmarked ? 'Remove bookmark' : 'Save item'}
-    >
+      style={{
+        background: bookmarked ? 'rgba(212,168,67,0.15)' : '#251a0e',
+        border: `1px solid ${bookmarked ? '#d4a843' : '#3d2d18'}`,
+        borderRadius: '10px',
+        padding: '8px 14px',
+        fontSize: '20px',
+        color: bookmarked ? '#d4a843' : '#8c7055',
+        cursor: mutation.isPending ? 'not-allowed' : 'pointer',
+        transition: 'all 0.2s',
+        flexShrink: 0,
+      }}>
       ★
     </button>
   );
