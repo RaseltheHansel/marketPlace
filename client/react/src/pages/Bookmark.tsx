@@ -19,15 +19,17 @@ export default function Bookmarks() {
     },
   });
 
+  const validBookmarks = bookmarks?.filter(b => b.listing) ?? [];
   const removeMutation = useMutation({
     mutationFn: (listingId: string) => api.post(`/bookmarks/${listingId}`),
     onSuccess:  () => qc.invalidateQueries({ queryKey: ['bookmarks'] }),
   });
+  
 
   return (
     <div className='max-w-6xl mx-auto px-4 py-8'>
       <h1 className='text-2xl font-bold text-gray-900 mb-6'>
-        ★ Saved Items ({bookmarks?.length ?? 0})
+        ★ Saved Items ({validBookmarks   .length})
       </h1>
       {isLoading && <p className='text-gray-400 text-center py-8'>Loading...</p>}
       {bookmarks?.length === 0 && (
@@ -36,7 +38,7 @@ export default function Bookmarks() {
         </p>
       )}
       <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
-        {bookmarks?.filter(b => b.listing).map(b => (
+        {validBookmarks.map(b => (
           <div key={b._id} className='relative group'>
             <ListingCard listing={b.listing} />
             <button

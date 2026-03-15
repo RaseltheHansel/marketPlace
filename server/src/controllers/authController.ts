@@ -119,7 +119,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({ message: 'No account with this email.' });
       return;
     }
-    if (!user.isVerified) {
+    if (!user.isVerified === false) {
       res.status(400).json({ message: 'Please verify your email first.', needsVerification: true, email });
       return;
     }
