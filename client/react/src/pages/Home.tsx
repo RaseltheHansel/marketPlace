@@ -61,21 +61,6 @@ export default function Home() {
         />
       </div>
 
-      {/* STATS ROW */}
-      <div style={{ borderBottom: '1px solid #3d2d18', display: 'flex' }}>
-        {[
-          { num: '2,400+', label: 'Active listings' },
-          { num: '840+',   label: 'Sellers' },
-          { num: '9',      label: 'Categories' },
-          { num: '24h',    label: 'Avg. response' },
-        ].map((s, i) => (
-          <div key={i} style={{ flex: 1, padding: '14px 20px', borderRight: i < 3 ? '1px solid #3d2d18' : 'none', textAlign: 'center' }}>
-            <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', color: '#f0832f', fontWeight: 600 }}>{s.num}</div>
-            <div style={{ fontSize: '11px', color: '#8c7055', marginTop: '2px' }}>{s.label}</div>
-          </div>
-        ))}
-      </div>
-
       {/* CATEGORY PILLS */}
       <div style={{ borderBottom: '1px solid #3d2d18', padding: '16px 24px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
         {[
